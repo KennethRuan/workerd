@@ -2206,6 +2206,7 @@ type Fetcher<
   queue(
     queueName: string,
     messages: ServiceBindingQueueMessage[],
+    metadata?: MessageBatchMetadata,
   ): Promise<FetcherQueueResult>;
   scheduled(options?: FetcherScheduledOptions): Promise<FetcherScheduledResult>;
 };
@@ -2408,6 +2409,14 @@ interface MessageSendRequest<Body = unknown> {
   contentType?: QueueContentType;
   delaySeconds?: number;
 }
+interface MessageBatchMetrics {
+  backlogCount: number;
+  backlogBytes: number;
+  oldestMessageTimestamp: number;
+}
+interface MessageBatchMetadata {
+  metrics: MessageBatchMetrics;
+}
 interface QueueRetryBatch {
   retry: boolean;
   delaySeconds?: number;
@@ -2430,12 +2439,14 @@ interface Message<Body = unknown> {
 interface QueueEvent<Body = unknown> extends ExtendableEvent {
   readonly messages: readonly Message<Body>[];
   readonly queue: string;
+  readonly metadata: MessageBatchMetadata;
   retryAll(options?: QueueRetryOptions): void;
   ackAll(): void;
 }
 interface MessageBatch<Body = unknown> {
   readonly messages: readonly Message<Body>[];
   readonly queue: string;
+  readonly metadata: MessageBatchMetadata;
   retryAll(options?: QueueRetryOptions): void;
   ackAll(): void;
 }
