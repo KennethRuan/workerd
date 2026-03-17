@@ -2393,11 +2393,33 @@ export interface KVNamespaceGetWithMetadataResult<Value, Metadata> {
 }
 export type QueueContentType = "text" | "bytes" | "json" | "v8";
 export interface Queue<Body = unknown> {
-  send(message: Body, options?: QueueSendOptions): Promise<void>;
+  send(message: Body, options?: QueueSendOptions): Promise<QueueSendResponse>;
   sendBatch(
     messages: Iterable<MessageSendRequest<Body>>,
     options?: QueueSendBatchOptions,
-  ): Promise<void>;
+  ): Promise<QueueSendBatchResponse>;
+}
+export interface QueueSendMetrics {
+  backlogCount: number;
+  backlogBytes: number;
+  oldestMessageTimestamp: number;
+}
+export interface QueueSendMetadata {
+  metrics: QueueSendMetrics;
+}
+export interface QueueSendResponse {
+  metadata: QueueSendMetadata;
+}
+export interface QueueSendBatchMetrics {
+  backlogCount: number;
+  backlogBytes: number;
+  oldestMessageTimestamp: number;
+}
+export interface QueueSendBatchMetadata {
+  metrics: QueueSendBatchMetrics;
+}
+export interface QueueSendBatchResponse {
+  metadata: QueueSendBatchMetadata;
 }
 export interface QueueSendOptions {
   contentType?: QueueContentType;
