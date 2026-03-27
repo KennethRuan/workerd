@@ -454,11 +454,9 @@ jsg::Promise<WorkerQueue::Metrics> WorkerQueue::metrics(
   return context.awaitIo(
       js, kj::mv(promise), [&metricsHandler](jsg::Lock& js, kj::String text) -> Metrics {
     auto parsed = jsg::JsValue::fromJson(js, text);
-    KJ_IF_SOME(result, metricsHandler.tryUnwrap(js, parsed)) {
-      return kj::mv(result);
-    }
-    _JSG_INTERNAL_FAIL_REQUIRE(
-        JSG_EXCEPTION(Error), "Failed to parse queue metrics response", text);
+    auto result = JSG_REQUIRE_NONNULL(metricsHandler.tryUnwrap(js, parsed), Error,
+        "Failed to parse queue metrics response", text);
+    return kj::mv(result);
   });
 }
 
